@@ -14,6 +14,7 @@ async function bootstrap() {
     .setTitle('我的 Todo App 接口')
     .setDescription('这是一个用来学习 NestJS 的示范项目')
     .setVersion('1.0')
+    .addBearerAuth() // 添加认证
     .build();
 
   // 创建文档

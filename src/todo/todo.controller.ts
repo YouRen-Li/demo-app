@@ -6,11 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import CreateTodoDto from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { AuthGuard } from '@nestjs/passport'; // 👈 1. 引入 AuthGuard
+import { ApiBearerAuth } from '@nestjs/swagger'; // 👈 2. 让 Swagger 支持填 Token
 
+@ApiBearerAuth() // 告诉 Swagger 这个接口需要 Token
+@UseGuards(AuthGuard('jwt')) // 👈 3. 加上这行，整个 Controller 就都被保护了！
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}

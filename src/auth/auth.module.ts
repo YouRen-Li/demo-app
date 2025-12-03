@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module'; // 👈 1. 引入用户模块
 import { JwtModule } from '@nestjs/jwt'; // 👈 2. 引入 JWT
 import { ConfigModule, ConfigService } from '@nestjs/config'; // 👈 3. 引入配置 这里的作用是读取配置文件中的 jwt.secret
+import { JwtStrategy } from './jwt.strategy'; // 👈 1. 引入刚才写的策略
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config'; // 👈 3. 引入�
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy], // 👈 2. 把它加到 providers 里
 })
 export class AuthModule {}
