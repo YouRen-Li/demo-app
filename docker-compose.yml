@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16          # 使用 PG 16
+    container_name: nest-pg
+    restart: always
+    ports:
+      - '5432:5432'             # ⚠️ 端口是 5432
+    environment:
+      POSTGRES_USER: root       # 账号
+      POSTGRES_PASSWORD: root   # 🔐 密码
+      POSTGRES_DB: todo_db      # 📂 数据库名
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data # 数据持久化

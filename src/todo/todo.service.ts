@@ -1,52 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import CreateTodoDto from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Repository } from 'typeorm'; // 引入仓库类型
+import { InjectRepository } from '@nestjs/typeorm'; // 引入注入工具
 import { Todo } from './entities/todo.entity';
 
 @Injectable()
 export class TodoService {
-  // 1.定义数组，模拟数据库用。默认是空数组
-  private todos: Todo[] = [];
+  // 构造函数注入
+  constructor(
+    @InjectRepository(Todo)
+    private todoRepository: Repository<Todo>,
+  ) {}
 
   // 增
-  create(createTodoDto: CreateTodoDto) {
-    const todo: Todo = {
-      id: Date.now(), //传入时间戳
-      name: createTodoDto.name, //name是前端传入
-      status: createTodoDto.status, //status也是前端传入
-      description: createTodoDto.description,
-      createdAt: Date.now().toString(),
-      updatedAt: Date.now().toString(),
-    };
-    this.todos.push(todo);
-    return '新增成功！';
+  async create(createTodoDto: CreateTodoDto) {
+    const newTodo = this.todoRepository.create(createTodoDto); //创建内存对象
+    return await this.todoRepository.save(newTodo); //写入数据库
   }
 
   // 查 查询全部列表数据
-  findAll() {
-    return this.todos;
+  async findAll() {
+    return await this.todoRepository.find();
   }
 
   // 查 查询某1条列表数据
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
+  async findOne(id: number) {
+    return await this.todoRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateTodoDto: UpdateTodoDto) {
-    const todo = this.todos.find((item) => item.id == id);
-    if (todo) {
-      Object.assign(todo, updateTodoDto);
-      return todo;
-    }
-    return null;
+  // 改
+  async update(id: number, updateTodoDto: UpdateTodoDto) {
+    // update(条件, 新内容)
+    await this.todoRepository.update(id, updateTodoDto);
+    // 返回更新后的那个任务看看
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    const index = this.todos.findIndex((item) => item.id == id);
-    if (index > -1) {
-      this.todos.splice(index, 1);
-      return { deleted: true, id: id };
-    }
-    return { deleted: false, message: '没找到任务' };
+  // 删
+  async remove(id: number) {
+    return await this.todoRepository.delete(id);
   }
 }
