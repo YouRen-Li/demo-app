@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import CreateTodoDto from './dto/create-todo.dto';
@@ -21,13 +22,18 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
-  create(@Body() createTodoDto: CreateTodoDto) {
-    return this.todoService.create(createTodoDto);
+  // 👇 2. 加上 @Req() req
+  create(@Body() createTodoDto: CreateTodoDto, @Req() req) {
+    // req.user 就是 JWT 解析出来的 { userId: 1, username: 'admin' }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    return this.todoService.create(createTodoDto, req.user.userId);
   }
 
   @Get()
-  findAll() {
-    return this.todoService.findAll();
+  // 👇 3. 加上 @Req() req
+  findAll(@Req() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+    return this.todoService.findAll(req.user.userId);
   }
 
   @Get(':id')

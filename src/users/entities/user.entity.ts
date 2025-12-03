@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Todo } from '../../todo/entities/todo.entity';
 
 @Entity() // 👈 标记为表
 export class User {
@@ -22,4 +24,9 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // 👇👇👇 新增这段：一对多关系
+  // 读作：一个 User 拥有 很多个 Todo
+  @OneToMany(() => Todo, (todo) => todo.user)
+  todos: Todo[];
 }

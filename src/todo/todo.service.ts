@@ -14,14 +14,22 @@ export class TodoService {
   ) {}
 
   // 增
-  async create(createTodoDto: CreateTodoDto) {
-    const newTodo = this.todoRepository.create(createTodoDto); //创建内存对象
+  async create(createTodoDto: CreateTodoDto, userId: number) {
+    const newTodo = this.todoRepository.create({
+      ...createTodoDto,
+      // 关键点：直接把 userId 塞给 user 属性，TypeORM 会自动关联
+      user: { id: userId },
+    }); //创建内存对象
     return await this.todoRepository.save(newTodo); //写入数据库
   }
 
   // 查 查询全部列表数据
-  async findAll() {
-    return await this.todoRepository.find();
+  async findAll(userId: number) {
+    return await this.todoRepository.find({
+      // 关键点：加 where 条件，只查属于这个人的
+      where: { user: { id: userId } },
+      // 可选：如果你想顺便把用户信息也查出来，可以加 relations: ['user']
+    });
   }
 
   // 查 查询某1条列表数据
