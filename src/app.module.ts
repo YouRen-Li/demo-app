@@ -1,26 +1,29 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config'; // 👈 1. 引入 ConfigModule
 import { TodoModule } from './todo/todo.module';
-import { TypeOrmModule } from '@nestjs/typeorm'; // 引入typeorm
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    // 配置数据库连接
+    // 👇 2. 先注册 ConfigModule，让它去读 .env
+    ConfigModule.forRoot({
+      isGlobal: true, // 让配置在全网通用，不用每个模块都导入
+    }),
+
+    // 👇 3. 数据库配置改用 process.env 读取
     TypeOrmModule.forRoot({
-      // 👇 重点检查这里！必须是 postgres
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'root', // 对应 docker-compose 里的 POSTGRES_USER
-      password: 'root', // 对应 docker-compose 里的 POSTGRES_PASSWORD
-      database: 'todo_db', // 对应 docker-compose 里的 POSTGRES_DB
+      host: process.env.DB_HOST, // 读取 .env 里的 DB_HOST
+      port: parseInt(process.env.DB_PORT || '5432'), // 读取端口并转为数字
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
     }),
     TodoModule,
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
