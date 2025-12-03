@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config'; // 👈 1. 引入 ConfigModule
 import { TodoModule } from './todo/todo.module';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     }),
     TodoModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
