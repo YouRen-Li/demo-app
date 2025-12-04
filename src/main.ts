@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common'; // 引入 ValidationPipe
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'; //引入 Swagger
+import { TransformInterceptor } from './common/response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   // 挂载文档
   SwaggerModule.setup('api', app, document);
+
+  // 👇 注册全局拦截器
+  app.useGlobalInterceptors(new TransformInterceptor());
+
+  // 👇 开启跨域允许 (允许所有前端访问)
+  app.enableCors();
 
   await app.listen(3000);
 }

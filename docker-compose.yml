@@ -1,13 +1,34 @@
+version: '3'
 services:
   postgres:
-    image: postgres:16          # 使用 PG 16
-    container_name: nest-pg
+    image: postgres:15-alpine
+    container_name: nest-postgres
     restart: always
     ports:
-      - '5432:5432'             # ⚠️ 端口是 5432
+      - '5432:5432'
     environment:
-      POSTGRES_USER: root       # 账号
-      POSTGRES_PASSWORD: root   # 🔐 密码
-      POSTGRES_DB: todo_db      # 📂 数据库名
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: todo_db
     volumes:
-      - ./pg_data:/var/lib/postgresql/data # 数据持久化
+      - ./pg_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      # 👇👇👇 新增这两行：强制构建参数为空，压制 Docker 的自动注入
+      args:
+        HTTP_PROXY: ""
+        HTTPS_PROXY: ""
+    container_name: nest-api
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: todo_db
+    depends_on:
+      - postgres

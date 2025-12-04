@@ -1,11 +1,14 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-// 只要你开启了 nest-cli.json 里的 swagger 插件，下面这些字段就会自动显示在文档里
+import { ApiProperty } from '@nestjs/swagger';
+
 export class LoginDto {
-  @IsNotEmpty()
+  @ApiProperty({ description: '用户名', example: 'admin' })
+  @IsNotEmpty({ message: '用户名不能为空' })
   @IsString()
   username: string;
 
-  @IsNotEmpty()
+  @ApiProperty({ description: '密码', example: '123456' })
+  @IsNotEmpty({ message: '密码不能为空' })
   @IsString()
   password: string;
 }

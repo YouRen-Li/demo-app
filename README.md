@@ -1,98 +1,138 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Demo App
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+基于 NestJS 框架构建的 RESTful API 服务，支持 Docker 容器化部署。
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🛠 技术栈
 
-## Description
+- **框架**: NestJS 11
+- **数据库**: PostgreSQL 15
+- **ORM**: TypeORM
+- **认证**: JWT + Passport
+- **容器化**: Docker + Docker Compose
+- **包管理**: pnpm
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 📁 项目结构
 
-## Project setup
-
-```bash
-$ pnpm install
+```
+src/
+├── auth/          # 认证模块（登录、注册、JWT）
+├── users/         # 用户管理
+├── todo/          # Todo 示例模块
+├── upload/        # 文件上传
+├── common/        # 公共模块
+├── app.module.ts  # 根模块
+└── main.ts        # 入口文件
 ```
 
-## Compile and run the project
+## 🚀 快速开始
+
+### 本地开发
 
 ```bash
-# development
-$ pnpm run start
+# 安装依赖
+pnpm install
 
-# watch mode
-$ pnpm run start:dev
+# 启动开发服务器
+pnpm start:dev
 
-# production mode
-$ pnpm run start:prod
+# 启动数据库（Docker）
+docker-compose up -d postgres
 ```
 
-## Run tests
+### Docker 本地运行
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+docker-compose up -d
 ```
 
-## Deployment
+访问：<http://localhost:3000>
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 📦 服务器部署
+
+### 1. 构建 AMD64 镜像（Mac M系列芯片必须）
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+docker buildx build --platform linux/amd64 -t demo-app-api:amd64 . --load
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 2. 导出镜像
 
-## Resources
+```bash
+docker save demo-app-api:amd64 -o app-api-amd64.tar
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 3. 上传到服务器
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+scp app-api-amd64.tar docker-compose.server.yml root@xx.xx.xx.xx:/root/demo-app/
+```
 
-## Support
+### 4. 服务器部署
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+ssh root@xx.xx.xx.xx
 
-## Stay in touch
+cd /root/demo-app
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# 停止旧容器
+docker-compose -f docker-compose.server.yml down
 
-## License
+# 删除旧镜像（如果存在）
+docker rmi demo-app-api:amd64 2>/dev/null
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# 加载新镜像
+docker load -i app-api-amd64.tar
+
+# 启动服务
+docker-compose -f docker-compose.server.yml up -d
+
+# 查看日志
+docker logs nest-api --tail 50
+```
+
+---
+
+## 🔧 环境变量
+
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| DB_HOST | 数据库地址 | postgres |
+| DB_PORT | 数据库端口 | 5432 |
+| DB_USER | 数据库用户 | root |
+| DB_PASSWORD | 数据库密码 | root |
+| DB_NAME | 数据库名 | todo_db |
+
+## 📡 API 端点
+
+| 路径 | 说明 |
+|------|------|
+| `GET /api` | API 状态 |
+| `POST /auth/login` | 用户登录 |
+| `POST /auth/register` | 用户注册 |
+| `GET /todo` | 获取待办列表 |
+| `POST /upload` | 文件上传 |
+
+---
+
+## 🌐 线上地址
+
+- **API**: <http://xx.xx.xx.xx:3000>
+- **Swagger 文档**: <http://xx.xx.xx.xx:3000/api-docs>
+
+## 📝 常用命令
+
+```bash
+# 查看容器状态
+docker ps
+
+# 查看日志
+docker logs nest-api -f
+
+# 重启服务
+docker-compose -f docker-compose.server.yml restart
+
+# 进入容器
+docker exec -it nest-api sh
+```

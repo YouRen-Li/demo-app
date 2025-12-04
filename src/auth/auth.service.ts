@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs'; // 👈 别忘了引入 bcrypt
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +32,20 @@ export class AuthService {
 
     return {
       access_token: await this.jwtService.signAsync(payload), // 👈 签发！
+    };
+  }
+
+  // 2. 注册逻辑
+  async register(registerDto: RegisterDto) {
+    // A. 创建用户 (UsersService.create() 会处理密码加密和重复检查)
+    const newUser = await this.usersService.create(registerDto);
+
+    // B. 注册成功后自动登录，返回 token
+    const payload = { sub: newUser.id, username: newUser.username };
+
+    return {
+      message: '注册成功',
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 }

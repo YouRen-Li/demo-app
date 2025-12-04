@@ -23,13 +23,21 @@ export class TodoService {
     return await this.todoRepository.save(newTodo); //写入数据库
   }
 
-  // 查 查询全部列表数据
-  async findAll(userId: number) {
-    return await this.todoRepository.find({
-      // 关键点：加 where 条件，只查属于这个人的
+  // FindAll 接收分页参数
+  async findAll(userId: number, page: number = 1, limit: number = 10) {
+    const [data, total] = await this.todoRepository.findAndCount({
       where: { user: { id: userId } },
-      // 可选：如果你想顺便把用户信息也查出来，可以加 relations: ['user']
+      order: { id: 'DESC' }, // 按 ID 倒序，新任务排前面
+      skip: (page - 1) * limit, // 跳过前面的 (第1页跳过0，第2页跳过10...)
+      take: limit, // 取多少条
     });
+
+    return {
+      items: data,
+      total: total,
+      page: page,
+      limit: limit,
+    };
   }
 
   // 查 查询某1条列表数据
