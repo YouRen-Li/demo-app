@@ -1,5 +1,8 @@
 # Demo App
 
+> [!IMPORTANT]
+> **历史部署演示，已停止维护。** 本仓库用于练习 NestJS、PostgreSQL、JWT 与 Docker 部署，文中的占位 IP 和示例凭据不能直接用于生产。较新的完整商城后端练习请查看 [shopping_cart_afterEnd](https://github.com/YouRen1320/shopping_cart_afterEnd)。代码和提交历史继续保留。
+
 基于 NestJS 框架构建的 RESTful API 服务，支持 Docker 容器化部署。
 
 ## 🛠 技术栈
